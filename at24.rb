@@ -39,5 +39,7 @@ Socket.udp_server_loop(host='0.0.0.0', 1234) do |msg, msg_src|
     plane[:altitude] = log[11].to_i unless log[11].empty?
   end
 
+  airplanes[icao] = plane
+
   Message.perform_async(plane)
 end
