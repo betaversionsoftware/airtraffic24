@@ -1,0 +1,23 @@
+version: '3'
+services:
+  redis:
+    image: redis
+  worker:
+    image: airtraffic24
+    links:
+      - redis
+    depends_on:
+      - redis
+    volumes:
+      - .:/app
+    command: sidekiq -r ./app/worker.rb
+  receiver:
+    image: airtraffic24
+    depends_on:
+      - worker
+      - redis
+    volumes:
+      - .:/app
+    ports:
+      - "1234:1234/udp"
+    command: ruby /app/at24.rb
