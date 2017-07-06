@@ -11,7 +11,7 @@ Socket.udp_server_loop(host='0.0.0.0', 1234) do |msg, msg_src|
   msg_n = log[1].to_i
 
   icao = log[4]
-  plane = airplanes[icao] || {}
+  plane = airplanes[icao] || { icao: icao }
   plane[:last_msg] = DateTime.now
 
   case msg_n

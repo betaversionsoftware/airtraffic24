@@ -12,7 +12,7 @@ class Message
   include Sidekiq::Worker
 
   def perform(plane)
-    valid_msg = %w(callsign altitude speed lat lng track squawk)
+    valid_msg = %w(icao callsign altitude speed lat lng track squawk)
     valid = valid_msg.all? { |v| plane.key?(v) }
     puts plane if valid
   end
