@@ -1,13 +1,17 @@
 version: '3'
 services:
+  mongo:
+    image: mongo
   redis:
     image: redis
   worker:
     image: airtraffic24
     links:
       - redis
+      - mongo
     depends_on:
       - redis
+      - mongo
     volumes:
       - .:/app
     command: sidekiq -r ./app/worker.rb
@@ -15,7 +19,6 @@ services:
     image: airtraffic24
     depends_on:
       - worker
-      - redis
     volumes:
       - .:/app
     ports:
