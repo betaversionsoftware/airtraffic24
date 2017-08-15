@@ -24,7 +24,8 @@ class Message
     json_plane['last_seen'] ||= DateTime.now
 
     @@traffic.insert_one(json_plane)
-
     @@current.find_one_and_update({'icao': json_plane['icao']}, {'$set': json_plane, '$inc': {messages: 1}}, { 'upsert': true})
+  rescue => e 
+    logger.warn("Duplicate #{e}")
   end
 end
