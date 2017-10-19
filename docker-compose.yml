@@ -1,34 +1,28 @@
 version: '2'
 services:
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - 5672:5672
+
   mongo:
     image: mongo
     volumes:
       - ./data/mongo:/data/db
 
-  redis:
-    image: redis
-
-  worker:
-    image: airtraffic24
-    links:
-      - redis
-      - mongo
-    depends_on:
-      - redis
-      - mongo
-    volumes:
-      - .:/app
-    command: sidekiq -r ./app/worker.rb
-
   receiver:
     image: airtraffic24
     depends_on:
-      - worker
+      - mongo
+      - rabbitmq
     volumes:
       - .:/app
-    ports:
-      - "1234:1234/udp"
     command: ruby /app/at24.rb
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500k"
+        max-file: "10"
 
   api:
     image: airtraffic24
@@ -38,6 +32,22 @@ services:
       - mongo
     volumes:
       - .:/app
-    ports:
-      - "4567:4567"
     command: ruby /app/api.rb
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500k"
+        max-file: "10"
+
+  nginx:
+    image: airtraffic24-nginx
+    depends_on:
+      - rabbitmq
+      - api
+    links:
+      - rabbitmq
+      - api
+    ports:
+      - 443:443
+      - 80:80
+
