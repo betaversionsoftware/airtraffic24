@@ -44,6 +44,9 @@ services:
     depends_on:
       - rabbitmq
       - api
+    volumes:
+      - ./data/sites:/etc/nginx/sites-enabled
+      - ./data/letsencrypt:/etc/letsencrypt
     links:
       - rabbitmq
       - api
